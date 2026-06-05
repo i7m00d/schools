@@ -430,6 +430,7 @@
     let n=0;
     const quiz=$("#quiz"); quiz.innerHTML="";
     BANK.units.filter(u=>selectedUnits.has(u.id)).forEach(u=>{
+      currentUnitId = u.id;
       u.sections.forEach(sec=>{
         const sh=document.createElement("div");
         sh.className="sec-head";
@@ -466,16 +467,23 @@
   }
 
   // ----- render a question card -----
+  // detect if current unit is المصطلحات
+  let currentUnitId = "";
+
   function renderCard(qid,q,num){
     const card=document.createElement("div");
     card.className="q-card"; card.id="card-"+qid;
-    const body=`<input class="ans-input" type="text" placeholder="اكتب إجابتك..." autocomplete="off">
-                <div class="hint">اكتب الإجابة ثم قارنها بنموذج الإجابة</div>`;
+    const isTerm = currentUnitId==="terms";
+    const ph = isTerm ? "اكتب اسم المصطلح..." : "اكتب إجابتك...";
+    const hint = isTerm ? "اقرأ التعريف واكتب المصطلح المناسب" : "اكتب الإجابة ثم قارنها بنموذج الإجابة";
+    const badge = isTerm ? "مصطلح" : "إجابة كتابية";
+    const body=`<input class="ans-input" type="text" placeholder="${ph}" autocomplete="off">
+                <div class="hint">${hint}</div>`;
     card.innerHTML=`
       <div class="q-head">
         <span class="q-num">${num}</span>
         <span class="q-text">${q.q}</span>
-        <span class="q-type-badge">إجابة كتابية</span>
+        <span class="q-type-badge">${badge}</span>
       </div>
       ${body}`;
 
