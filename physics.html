@@ -184,13 +184,14 @@
     margin-right:auto;align-self:flex-start;white-space:nowrap;flex:none;
   }
 
-  /* text input */
-  .ans-input{
+  /* text input & textarea */
+  .ans-input, .ans-textarea {
     width:100%;font-family:'Tajawal';font-size:17px;color:var(--ink);
-    padding:15px 16px;border:1.5px solid var(--line);border-radius:12px;background:#fff;
+    padding:15px 16px;border:1.5px solid var(--line);border-radius:12px;background:#f8fafc;
     transition:.15s;
   }
-  .ans-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(179,32,44,.12)}
+  .ans-textarea { resize:vertical;min-height:80px; }
+  .ans-input:focus, .ans-textarea:focus {outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(179,32,44,.12)}
   .hint{font-size:12px;color:var(--ink-soft);margin-top:7px}
 
   /* graded states */
