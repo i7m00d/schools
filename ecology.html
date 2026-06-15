@@ -471,6 +471,9 @@
     } else if(q.type==="essay"){
       const inp=$(".ans-textarea",card);
       inp.addEventListener("input",()=>{answers[qid]={value:inp.value,graded:false};updateProgress();});
+      inp.addEventListener("blur",()=>{
+        if(mode==="instant"&&inp.value.trim()!==""&&!(answers[qid]&&answers[qid].graded)) gradeOne(qid);
+      });
     } else { // fill & correct
       const inp=$(".ans-input",card);
       inp.addEventListener("input",()=>{answers[qid]={value:inp.value,graded:false};updateProgress();});
