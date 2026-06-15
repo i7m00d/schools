@@ -281,7 +281,7 @@
   let session = [];
   let answers = {};
 
-  const TYPE_LABEL = {mcq:"اختيار",tf:"صواب وخطأ",fill:"إكمال فراغ",match:"وصل/جدول",essay:"مقالي"};
+  const TYPE_LABEL = {mcq:"اختيار",tf:"صواب وخطأ",fill:"إكمال فراغ",match:"وصل/جدول",essay:"مقالي",correct:"تصحيح"};
 
   $("#subtitle").textContent = BANK.subtitle;
 
@@ -289,7 +289,7 @@
   $("#metaRow").innerHTML =
     `<span class="chip">عدد الوحدات <b>${BANK.units.length}</b></span>`+
     `<span class="chip">إجمالي الأسئلة <b>${totalQ}</b></span>`+
-    `<span class="chip">اختيار · فراغات · مطابقة · مقالي</span>`;
+    `<span class="chip">اختيار · فراغات · مقالي · تصحيح</span>`;
 
   // unit cards
   const grid = $("#unitsGrid");
@@ -411,16 +411,21 @@
 
     } else if(q.type==="match"){
       const headers = Object.keys(q.pairs[0]);
-      const thead = `<thead><tr>${headers.map(h=>`<th>${h}</th>`).join(""}</tr></thead>`;
+      const thead = `<thead><tr>${headers.map(h=>`<th>${h}</th>`).join("")}</tr></thead>`;
       const tbody = `<tbody>${q.pairs.map(pair=>`<tr>${
-        headers.map((h,i)=>`<td class="${i===0?"match-key":"match-val hidden"}">${pair[h]}</td>`).join(""
-      )}</tr>`).join("")}</tbody>`;
+        headers.map((h,i)=>`<td class="${i===0?"match-key":"match-val hidden"}">${pair[h]}</td>`).join("")
+      }</tr>`).join("")}</tbody>`;
       body=`<div class="match-table-wrap"><table class="match-table">${thead}${tbody}</table></div>
             <button class="reveal-btn" type="button">👁 اكشف الإجابة</button>`;
 
     } else if(q.type==="essay"){
       body=`<textarea class="ans-textarea" placeholder="اكتب إجابتك..." autocomplete="off"></textarea>
             <div class="hint">بعد التسليم يظهر نموذج الإجابة للمقارنة والتقييم الذاتي</div>`;
+
+    } else if(q.type==="correct"){
+      body=`<input class="ans-input" type="text" placeholder="اكتب المصطلح الصحيح..." autocomplete="off">
+            <div class="hint">استبدل الكلمة الخاطئة بالمصطلح الصحيح</div>`;
+
     } else { // fill
       body=`<input class="ans-input" type="text" placeholder="اكتب إجابتك..." autocomplete="off">
             <div class="hint">أكمل الفراغ بالكلمة المناسبة</div>`;
@@ -430,7 +435,7 @@
       <div class="q-head">
         <span class="q-num">${num}</span>
         <span class="q-text">${q.q}</span>
-        <span class="q-type-badge">${TYPE_LABEL[q.type]}</span>
+        <span class="q-type-badge">${TYPE_LABEL[q.type]||q.type}</span>
       </div>${body}`;
 
     // listeners
@@ -466,7 +471,7 @@
     } else if(q.type==="essay"){
       const inp=$(".ans-textarea",card);
       inp.addEventListener("input",()=>{answers[qid]={value:inp.value,graded:false};updateProgress();});
-    } else { // fill
+    } else { // fill & correct
       const inp=$(".ans-input",card);
       inp.addEventListener("input",()=>{answers[qid]={value:inp.value,graded:false};updateProgress();});
       inp.addEventListener("blur",()=>{
@@ -507,12 +512,10 @@
       addVerdict(card,ok,ok?"إجابة صحيحة ✓":"الصواب: "+(q.answer?"صحيحة":"خاطئة"));
 
     } else if(q.type==="match"){
-      // Reveal hidden cells
       $$(".match-val.hidden",card).forEach(td=>td.classList.remove("hidden"));
       $(".reveal-btn",card)?.remove();
       a.graded=true; a.correct=false;
       card.classList.add("wrong");
-      // self-grade
       const sg=document.createElement("div");
       sg.className="self-grade";
       sg.innerHTML=`<span>قيّم حفظك للجدول:</span>
@@ -534,7 +537,7 @@
       card.classList.add("wrong");
       const v=document.createElement("div");
       v.className="verdict no";
-      v.innerHTML=`<span class="ic">؟</span><span>نموذج الإجابة:<span class="model model-block">${q.answer||"لا توجد إجابة ثابتة"}</span></span>`;
+      v.innerHTML=`<span class="ic">؟</span><span>نموذج الإجابة:<span class="model model-block"> ${q.answer||"لا توجد إجابة ثابتة"}</span></span>`;
       card.appendChild(v);
       const sg=document.createElement("div");
       sg.className="self-grade";
@@ -551,7 +554,7 @@
         });
       });
 
-    } else { // fill
+    } else { // fill & correct
       const auto=norm(a.value)!==""&&q.answer.split("/").some(p=>
         norm(a.value)===norm(p)||(norm(p).includes(norm(a.value))&&norm(a.value).length>2));
       a.graded=true; a.correct=auto;
@@ -566,7 +569,7 @@
       sg.className="self-grade";
       sg.innerHTML=`<span>قيّم إجابتك بنفسك:</span>
         <button class="sg-btn" data-v="ok">صحيحة</button>
-        <button class="sg-btn"="no">خاطئة</button>`;
+        <button class="sg-btn" data-v="no">خاطئة</button>`;
       card.appendChild(sg);
       $$(".sg-btn",sg).forEach(btn=>{
         btn.addEventListener("click",()=>{
@@ -590,7 +593,7 @@
   function updateProgress(){
     const answered=session.filter(s=>{
       const a=answers[s.qid]; if(!a) return false;
-      if(s.type==="fill"||s.type==="essay") return (a.value||"").trim()!=="";
+      if(s.type==="fill"||s.type==="essay"||s.type==="correct") return (a.value||"").trim()!=="";
       if(s.type==="match") return a.value==="revealed";
       return a.value!==undefined&&a.value!==null;
     }).length;

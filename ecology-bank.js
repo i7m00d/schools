@@ -1,5 +1,4 @@
 // بنك الأسئلة — علم البيئة
-// تم توليده تلقائياً من exam_questions.json
 
 const ECOLOGY_BANK = {
   "title": "بنك أسئلة علم البيئة",
