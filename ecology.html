@@ -554,7 +554,14 @@
         });
       });
 
-    } else { // fill & correct
+    } else if(q.type==="correct"){
+      const ok=norm(a.value)!==""&&q.answer.split("/").some(p=>norm(a.value)===norm(p));
+      a.graded=true; a.correct=ok;
+      const inp=$(".ans-input",card); inp.disabled=true;
+      card.classList.add(ok?"correct":"wrong");
+      addVerdict(card,ok,ok?"إجابة صحيحة ✓":"الإجابة الصحيحة: "+q.answer);
+
+    } else { // fill
       const auto=norm(a.value)!==""&&q.answer.split("/").some(p=>
         norm(a.value)===norm(p)||(norm(p).includes(norm(a.value))&&norm(a.value).length>2));
       a.graded=true; a.correct=auto;
