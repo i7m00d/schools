@@ -272,10 +272,10 @@
     <div class="controls">
       <span class="seg-label">طريقة المراجعة:</span>
       <div class="seg" id="modeSeg">
-        <button data-mode="exam" class="active">وضع الاختبار</button>
-        <button data-mode="instant">تصحيح فوري</button>
+        <button data-mode="instant" class="active">تصحيح فوري</button>
+        <button data-mode="exam">وضع الاختبار</button>
       </div>
-      <span class="seg-label" id="modeDesc">يتصحح كل شيء بعد ما تسلّم بالآخر</span>
+      <span class="seg-label" id="modeDesc">يتصحح كل سؤال أول بأول وأنت تحل</span>
     </div>
     <button class="start-btn" id="startBtn" disabled>ابدأ المراجعة <span>←</span></button>
   </section>
@@ -293,7 +293,7 @@
   let BANK = ENGLISH_BANK;
 
   let selectedUnits = new Set();
-  let mode = "exam";
+  let mode = "instant";
   let session = [];
   let answers = {};
 
@@ -397,7 +397,7 @@
   })();
 
   function norm(s){
-    return (s||"").toString().trim()
+    return (s||"").toString().trim().toLowerCase()
       .replace(/[ً-ْٰ]/g,"")
       .replace(/[أإآا]/g,"ا").replace(/ى/g,"ي").replace(/ة/g,"ه")
       .replace(/[ؤئ]/g,"ء")
@@ -520,12 +520,15 @@
     } else if(q.type==="essay"){
       const inp=$(".ans-textarea",card);
       inp.addEventListener("input",()=>{answers[qid]={value:inp.value,graded:false};updateProgress();});
-    } else { // fill
-      const inp=$(".ans-input",card);
-      inp.addEventListener("input",()=>{answers[qid]={value:inp.value,graded:false};updateProgress();});
       inp.addEventListener("blur",()=>{
         if(mode==="instant"&&inp.value.trim()!==""&&!(answers[qid]&&answers[qid].graded)) gradeOne(qid);
       });
+    } else { // fill
+      const inp=$(".ans-input",card);
+      inp.addEventListener("input",()=>{answers[qid]={value:inp.value,graded:false};updateProgress();});
+      const tryGrade=()=>{ if(mode==="instant"&&inp.value.trim()!==""&&!(answers[qid]&&answers[qid].graded)) gradeOne(qid); };
+      inp.addEventListener("blur",tryGrade);
+      inp.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); tryGrade(); } });
     }
     return card;
   }
