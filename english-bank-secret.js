@@ -1,15 +1,14 @@
 // بنك الأسئلة السري — اللغة الإنجليزية / الوحدات 7-12 (نسخة جديدة)
-// يظهر فقط عند إدخال الرمز من شاشة بنك اللغة الإنجليزية.
-
+// مقسّم إلى 6 وحدات مستقلة (كل قسم على حدة). يظهر فقط عند إدخال الرمز.
 
 const ENGLISH_BANK_SECRET = {
   "title": "بنك أسئلة اللغة الإنجليزية",
   "subtitle": "الصف الأول الثانوي · الفصل الدراسي الثاني 1447 هـ",
   "units": [
     {
-      "id": "units-7-12",
-      "name": "Units 7-12",
-      "sub": "G10 English Revision - 2nd Term",
+      "id": "sec-grammar",
+      "name": "Grammar",
+      "sub": "Choose the right word · قواعد",
       "sections": [
         {
           "name": "Choose the right word (Grammar)",
@@ -642,7 +641,14 @@ const ENGLISH_BANK_SECRET = {
               "answer": 1
             }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "id": "sec-transform",
+      "name": "Do as shown in brackets",
+      "sub": "تحويل الجُمل",
+      "sections": [
         {
           "name": "Do as shown in brackets",
           "questions": [
@@ -847,7 +853,14 @@ const ENGLISH_BANK_SECRET = {
               "answer": "called"
             }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "id": "sec-fill1",
+      "name": "Fill in the blanks · Set 1",
+      "sub": "إكمال الفراغات · المجموعة ١",
+      "sections": [
         {
           "name": "Fill in the blanks with these words (Set 1)",
           "questions": [
@@ -1051,7 +1064,14 @@ const ENGLISH_BANK_SECRET = {
             "cracked",
             "scratched"
           ]
-        },
+        }
+      ]
+    },
+    {
+      "id": "sec-fill2",
+      "name": "Fill in the blanks · Set 2",
+      "sub": "إكمال الفراغات · المجموعة ٢",
+      "sections": [
         {
           "name": "Fill in the blanks with these words (Set 2)",
           "questions": [
@@ -1256,7 +1276,14 @@ const ENGLISH_BANK_SECRET = {
             "cracked",
             "scratched"
           ]
-        },
+        }
+      ]
+    },
+    {
+      "id": "sec-vocab",
+      "name": "Vocabulary",
+      "sub": "Choose the right word · مفردات",
+      "sections": [
         {
           "name": "Choose the right word (Vocabulary)",
           "questions": [
@@ -1667,7 +1694,14 @@ const ENGLISH_BANK_SECRET = {
               "answer": 0
             }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "id": "sec-match",
+      "name": "Match the words",
+      "sub": "مطابقة الكلمات بمعانيها",
+      "sections": [
         {
           "name": "Match the words with their meanings",
           "questions": [

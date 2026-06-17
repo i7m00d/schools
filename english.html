@@ -300,6 +300,8 @@
 
     BANK.units.forEach(u=>{
       const count = u.sections.reduce((a,s)=>a+s.questions.length,0);
+      const nSec = u.sections.length;
+      const secLabel = nSec===1 ? "قسم واحد" : nSec===2 ? "قسمان" : nSec+" أقسام";
       const card = document.createElement("div");
       card.className="unit-card"; card.dataset.id=u.id;
       card.innerHTML=`
@@ -310,7 +312,7 @@
           </div>
           <div class="uc-check">✓</div>
         </div>
-        <div class="uc-count">${count} سؤال · ${u.sections.length} أقسام</div>`;
+        <div class="uc-count">${count} سؤال · ${secLabel}</div>`;
       card.addEventListener("click",()=>{
         if(selectedUnits.has(u.id)){selectedUnits.delete(u.id);card.classList.remove("selected");}
         else{selectedUnits.add(u.id);card.classList.add("selected");}
