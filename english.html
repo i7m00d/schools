@@ -586,12 +586,17 @@
       });
 
     } else if(q.type==="essay"){
-      a.graded=true; a.correct=false;
+      const model=(q.answer||"").toString();
+      // تصحيح تلقائي: مطابقة نموذج الإجابة (أو أحد البدائل المفصولة بـ " / ")
+      const auto=norm(a.value)!=="" && model!=="" &&
+        model.split(" / ").some(p=>norm(a.value)===norm(p));
+      a.graded=true; a.correct=auto;
       const inp=$(".ans-textarea",card); inp.disabled=true;
-      card.classList.add("wrong");
+      card.classList.add(auto?"correct":"wrong");
       const v=document.createElement("div");
-      v.className="verdict no";
-      v.innerHTML=`<span class="ic">؟</span><span>نموذج الإجابة:<span class="model model-block">${q.answer||"لا توجد إجابة ثابتة"}</span></span>`;
+      v.className="verdict "+(auto?"ok":"no");
+      v.innerHTML=`<span class="ic">${auto?"✓":"؟"}</span>
+        <span>${auto?"إجابة صحيحة ✓ — مطابقة لنموذج الإجابة:":"نموذج الإجابة:"} <span class="model model-block">${model||"لا توجد إجابة ثابتة"}</span></span>`;
       card.appendChild(v);
       const sg=document.createElement("div");
       sg.className="self-grade";
@@ -607,6 +612,7 @@
           if($("#resultBox").classList.contains("show")) computeResult();
         });
       });
+      if(auto) $(".sg-btn[data-v=ok]",sg).classList.add("pick-ok");
 
     } else { // fill
       const auto=norm(a.value)!==""&&q.answer.split("/").some(p=>
