@@ -270,11 +270,12 @@
 <footer>بنك أسئلة اللغة الإنجليزية · نسخة تفاعلية للمراجعة · أول ثانوي ف2 1447هـ</footer>
 
 <script src="english-bank.js"></script>
+<script src="english-bank-secret.js"></script>
 <script>
 (function(){
   const $ = (s,el=document)=>el.querySelector(s);
   const $$ = (s,el=document)=>[...el.querySelectorAll(s)];
-  const BANK = ENGLISH_BANK;
+  let BANK = ENGLISH_BANK;
 
   let selectedUnits = new Set();
   let mode = "exam";
@@ -283,36 +284,43 @@
 
   const TYPE_LABEL = {mcq:"اختيار",tf:"صواب وخطأ",fill:"إكمال فراغ",match:"وصل/جدول",essay:"مقالي"};
 
-  $("#subtitle").textContent = BANK.subtitle;
-
-  const totalQ = BANK.units.reduce((s,u)=>s+u.sections.reduce((a,sec)=>a+sec.questions.length,0),0);
-  $("#metaRow").innerHTML =
-    `<span class="chip">عدد الوحدات <b>${BANK.units.length}</b></span>`+
-    `<span class="chip">إجمالي الأسئلة <b>${totalQ}</b></span>`+
-    `<span class="chip">اختيار · فراغات · مطابقة · مقالي</span>`;
-
-  // unit cards
   const grid = $("#unitsGrid");
-  BANK.units.forEach(u=>{
-    const count = u.sections.reduce((a,s)=>a+s.questions.length,0);
-    const card = document.createElement("div");
-    card.className="unit-card"; card.dataset.id=u.id;
-    card.innerHTML=`
-      <div class="uc-top">
-        <div>
-          <span class="uc-name">${u.name}</span>
-          <span class="uc-sub">${u.sub}</span>
+
+  // بناء شاشة البداية (العنوان + الإحصائيات + بطاقات الوحدات) — قابلة لإعادة البناء عند تبديل البنك
+  function renderIntro(){
+    selectedUnits.clear();
+    grid.innerHTML = "";
+    $("#subtitle").textContent = BANK.subtitle;
+
+    const totalQ = BANK.units.reduce((s,u)=>s+u.sections.reduce((a,sec)=>a+sec.questions.length,0),0);
+    $("#metaRow").innerHTML =
+      `<span class="chip">عدد الوحدات <b>${BANK.units.length}</b></span>`+
+      `<span class="chip">إجمالي الأسئلة <b>${totalQ}</b></span>`+
+      `<span class="chip">اختيار · فراغات · مطابقة · مقالي</span>`;
+
+    BANK.units.forEach(u=>{
+      const count = u.sections.reduce((a,s)=>a+s.questions.length,0);
+      const card = document.createElement("div");
+      card.className="unit-card"; card.dataset.id=u.id;
+      card.innerHTML=`
+        <div class="uc-top">
+          <div>
+            <span class="uc-name">${u.name}</span>
+            <span class="uc-sub">${u.sub}</span>
+          </div>
+          <div class="uc-check">✓</div>
         </div>
-        <div class="uc-check">✓</div>
-      </div>
-      <div class="uc-count">${count} سؤال · ${u.sections.length} أقسام</div>`;
-    card.addEventListener("click",()=>{
-      if(selectedUnits.has(u.id)){selectedUnits.delete(u.id);card.classList.remove("selected");}
-      else{selectedUnits.add(u.id);card.classList.add("selected");}
-      refreshStart();
+        <div class="uc-count">${count} سؤال · ${u.sections.length} أقسام</div>`;
+      card.addEventListener("click",()=>{
+        if(selectedUnits.has(u.id)){selectedUnits.delete(u.id);card.classList.remove("selected");}
+        else{selectedUnits.add(u.id);card.classList.add("selected");}
+        refreshStart();
+      });
+      grid.appendChild(card);
     });
-    grid.appendChild(card);
-  });
+    refreshStart();
+  }
+  renderIntro();
 
   function refreshStart(){
     $("#startBtn").disabled = selectedUnits.size===0;
@@ -341,6 +349,35 @@
       $("#modeDesc").textContent = mode==="exam"?"يتصحح كل شيء بعد ما تسلّم بالآخر":"يتصحح كل سؤال أول بأول وأنت تحل";
     });
   });
+
+  // بوابة سرية: 3 نقرات على شعار EN ثم إدخال الرمز 707 لإظهار أسئلة الوحدات 7-12 الجديدة
+  (function setupSecretGate(){
+    const seal = $(".seal");
+    if(!seal || typeof ENGLISH_BANK_SECRET === "undefined") return;
+    let taps = 0, timer = null, unlocked = false;
+    seal.style.cursor = "pointer";
+    seal.addEventListener("click",()=>{
+      if(unlocked) return;
+      taps++;
+      clearTimeout(timer);
+      timer = setTimeout(()=>{ taps = 0; }, 1200);
+      if(taps < 3) return;
+      taps = 0; clearTimeout(timer);
+      const code = prompt("أدخل الرمز:");
+      if(code === null) return;
+      if(code.trim() !== "707"){ alert("رمز غير صحيح"); return; }
+      unlocked = true;
+      BANK = ENGLISH_BANK_SECRET;
+      // ارجع لشاشة البداية وأعد البناء بالأسئلة الجديدة
+      session = []; answers = {};
+      const quiz = $("#quiz");
+      quiz.style.display = "none"; quiz.innerHTML = "";
+      $("#intro").style.display = "block";
+      $("#progressStick").classList.remove("show");
+      renderIntro();
+      window.scrollTo({top:0,behavior:"instant"});
+    });
+  })();
 
   function norm(s){
     return (s||"").toString().trim()
