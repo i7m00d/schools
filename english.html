@@ -177,6 +177,21 @@
   .verdict .ic{font-family:'Cairo';font-weight:700;flex:none}
   .verdict .model{color:var(--ink);font-weight:600}
 
+  /* ===== المحتوى الإنجليزي يُعرض من اليسار لليمين (LTR) داخل الصفحة العربية ===== */
+  .q-head{direction:ltr}
+  .q-text{direction:ltr;text-align:left}
+  .opt{direction:ltr;text-align:left;justify-content:flex-start}
+  .ans-input, .ans-textarea{direction:ltr;text-align:left}
+  .sec-head{direction:ltr}
+  /* عناوين مختلطة (إنجليزي/عربي): اتركها تحدد اتجاهها تلقائياً حسب أول حرف */
+  .sec-head .unit-tag, .sec-head h3, .uc-name, .uc-sub{unicode-bidi:plaintext}
+  .verdict .model{direction:ltr;display:inline-block;text-align:left}
+  .match-table{direction:ltr}
+  .match-table th, .match-table td{text-align:left}
+  .word-bank{direction:ltr;display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 16px}
+  .word-bank span{background:var(--accent-bg);color:var(--accent);font-weight:600;
+    font-size:13.5px;padding:5px 13px;border-radius:999px;border:1px solid var(--line)}
+
   .self-grade{display:flex;gap:8px;margin-top:11px;font-size:12.5px;align-items:center;color:var(--ink-soft);flex-wrap:wrap}
   .sg-btn{border:1.5px solid var(--line);background:#fff;border-radius:9px;padding:6px 14px;
     font-family:'Tajawal';font-weight:600;font-size:12.5px;cursor:pointer;transition:.15s;color:var(--ink-soft)}
